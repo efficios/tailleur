@@ -63,13 +63,16 @@ Specify it as follows:
 
 ## Why
 
-1. Existing benchmarking tools in Python such as ASV[1] and pytest-benchmark[2] are meant to benchmark Python projects.
+1. Existing benchmarking tools in Python such as [ASV][1] and [pytest-benchmark][2] are meant to benchmark Python projects.
 2. Benchmarks should be able to return more metrics than just execution time.
 3. Benchmark results should include more metadata on the running environment.
 
 ## References and more
 
+* [ASV][1]
+* [pytest-benchmark][2]
+* [google/becnhmark](https://github.com/google/benchmark)
+* [hyperfine](https://github.com/sharkdp/hyperfine)
+
 [1]: https://github.com/airspeed-velocity/asv
 [2]: https://github.com/ionelmc/pytest-benchmark
-[3]: https://github.com/google/benchmark
-[4]: https://github.com/sharkdp/hyperfine
