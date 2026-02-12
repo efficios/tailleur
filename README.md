@@ -9,7 +9,8 @@ This project aims to provide tools for blackbox benchmarking, with options to dr
 From source:
 
     git clone https://github.com/kienanstewart/tailleur.git && cd tailleur
-    poetry run src/cli.py
+    poetry install
+    poetry run tailleur
 
 ## Configuration
 
@@ -28,7 +29,7 @@ A JSON or YAML file
 Set the defaults via command-line:
 
 
-    poetry run src/cli.py --config /path/to/config.yaml
+    poetry run tailleur --config /path/to/config.yaml
 
 ### Benchmark selection
 
@@ -58,7 +59,7 @@ A JSON or YAML file
 
 Specify it as follows:
 
-    poetry run src/cli.py --benchmarks suite.yaml
+    poetry run tailleur --benchmarks suite.yaml
 
 ## Why
 

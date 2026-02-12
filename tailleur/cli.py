@@ -12,8 +12,6 @@ import sys
 
 import yaml
 
-import benchmark
-
 
 def discover_benchmarks(search_dirs):
     benchmarks = list()
@@ -278,7 +276,7 @@ def _load_file(path):
             return yaml.safe_load(f.read())
 
 
-if __name__ == "__main__":
+def main():
     logging.basicConfig()
     parser = _get_parser()
     args = parser.parse_args()
@@ -299,3 +297,7 @@ if __name__ == "__main__":
             json.dump(results, f)
     else:
         print(json.dumps(results))
+
+
+if __name__ == "__main__":
+    main()
