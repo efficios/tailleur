@@ -1,0 +1,32 @@
+[project]
+name = "tailleur"
+version = "0.1.0"
+description = "A generic benchmark framework and runner"
+authors = [
+    {name = "Kienan Stewart",email = "kstewart@efficios.com"}
+]
+license = {text = "GPL-2.0-only"}
+readme = "README.md"
+requires-python = ">=3.10"
+dependencies = [
+    "pyyaml (>=6.0.3,<7.0.0)"
+]
+
+[dependency-groups]
+dev = [
+    "black (>=26.1.0,<27.0.0)",
+    "isort (>=7.0.0,<8.0.0)",
+    "pytest (>=9.0.2,<10.0.0)",
+    "pre-commit (>=4.5.1,<5.0.0)"
+]
+
+
+[build-system]
+requires = ["poetry-core>=2.0.0,<3.0.0"]
+build-backend = "poetry.core.masonry.api"
+
+[tool.black]
+
+[tool.isort]
+profile = "black"
+
