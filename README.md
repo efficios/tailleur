@@ -8,7 +8,7 @@ This project aims to provide tools for blackbox benchmarking, with options to dr
 
 From source:
 
-    git clone https://github.com/kienanstewart/tailleur.git && cd tailleur
+    git clone https://github.com/efficios/tailleur.git && cd tailleur
     poetry install
     poetry run tailleur
 
