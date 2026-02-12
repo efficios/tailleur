@@ -1,4 +1,7 @@
 ---
+# SPDX-License-Identifier: GPL-2.0-only
+# SPDX-FileCopyrightText: 2026 Kienan Stewart <kstewart@efficios.com>
+
 search_paths:
   - /path/to/x
   - relative_to_cwd/x
