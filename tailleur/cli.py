@@ -5,6 +5,7 @@
 #
 
 import argparse
+import enum
 import importlib
 import json
 import logging
@@ -12,9 +13,15 @@ import os
 import pathlib
 import pkgutil
 import platform
+import re
 import sys
 
 import yaml
+
+
+class FilterModule(enum.StrEnum):
+    NAME = "name"
+    RE = "re"
 
 
 def discover_benchmarks(search_dirs):
@@ -64,7 +71,57 @@ def find_benchmark_by_name(all_benchmarks, name):
     return options[0]["cls"]
 
 
-def run_benchmarks(config=dict(), suite=dict()):
+def filter_benchmarks(benchmarks, benchmark_filters=list()):
+    kept = list()
+    keep_default = len(benchmark_filters) == 0
+    logging.debug("Keep benchmarks by default: {}".format(keep_default))
+    for benchmark in benchmarks:
+        keep = keep_default
+        for benchmark_filter in benchmark_filters:
+            invert = False
+            if benchmark_filter[0] == "!":
+                invert = True
+                benchmark_filter = benchmark_filter[1:]
+
+            filter_module = FilterModule.NAME
+            if benchmark_filter.startswith("{}:".format(FilterModule.RE)):
+                filter_module = FilterModule.RE
+                benchmark_filter = benchmark_filter.split(":")[1]
+            elif benchmark_filter.startswith("{}:".format(FilterModule.NAME)):
+                filter_module = FilterModule.NAME
+                benchmark_filter = benchmark_filter.split(":")[1]
+            elif benchmark_filter.rfind(":") != -1:
+                raise Exception(
+                    "Unknown filter module '{}' in filter '{}'".format(
+                        benchmark_filter.split(":")[0], benchmark_filter
+                    )
+                )
+
+            if filter_module == FilterModule.NAME:
+                if benchmark_filter == benchmark["name"] or (
+                    benchmark_filter.find(".") == -1
+                    and benchmark["name"].rfind(".{}".format(benchmark_filter)) != -1
+                ):
+                    logging.debug(
+                        "Benchmark '{}' matches filter '{}', invert={}".format(
+                            benchmark["name"], benchmark_filter, invert
+                        )
+                    )
+                    keep = True
+            elif filter_module == FilterModule.RE:
+                if re.match(benchmark_filter, benchmark["name"]):
+                    keep = True
+
+            if invert:
+                keep = not keep
+
+        if keep:
+            kept.append(benchmark)
+
+    return kept
+
+
+def run_benchmarks(config=dict(), suite=dict(), benchmark_filters=list()):
     # Step 1: Load from search dirs and then transform into a set of benchmarks to run
     paths = config["search_paths"]
     if "search_paths" in suite:
@@ -98,6 +155,7 @@ def run_benchmarks(config=dict(), suite=dict()):
     else:
         benchmarks = all_benchmarks
 
+    benchmarks = filter_benchmarks(benchmarks, benchmark_filters)
     results = {
         "config": config,
         "metadata": get_generic_metadata(),
@@ -265,6 +323,13 @@ def _get_parser():
         "-o", "--output", type=pathlib.Path, help="The output path for the results"
     )
 
+    parser.add_argument(
+        "-f",
+        "--filter",
+        action="append",
+        help="Supplemental benchmark filter(s) to apply",
+    )
+
     parser.set_defaults(
         log_level=logging.INFO, search_path=[pathlib.Path("benchmarks").absolute()]
     )
@@ -295,7 +360,7 @@ def main():
         suite = _load_file(args.benchmarks)
 
     config["search_paths"] = args.search_path
-    results = run_benchmarks(config, suite)
+    results = run_benchmarks(config, suite, benchmark_filters=args.filter)
     if args.output:
         with open(args.output, "w") as f:
             json.dump(results, f)
